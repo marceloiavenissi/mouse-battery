@@ -3,19 +3,19 @@ const kPower = ExtensionUtils.getCurrentExtension().imports.kPower;
 const Log = kPower.Log;
 const Main = imports.ui.main;
 
-var btMouseBattIndicator;
+var btDevicesBattIndicator;
 function enable() {
 	Log("Enable");
-	btMouseBattIndicator = new kPower.mBattIndicator();
-	Main.panel.addToStatusArea('BtMouseBattIndicator', btMouseBattIndicator, 1);
+	btDevicesBattIndicator = new kPower.mBattIndicator();
+	Main.panel.addToStatusArea('BtDevicesBattIndicator', btDevicesBattIndicator, 1);
 }
 
 function disable() {
 	Log("Disable");
-	kPower.dbusCon.signal_unsubscribe(btMouseBattIndicator.subIdAdd);
-	kPower.dbusCon.signal_unsubscribe(btMouseBattIndicator.subIdRem);
-	btMouseBattIndicator._proxy = null;
-	btMouseBattIndicator.reset();
-	btMouseBattIndicator.destroy();
-	btMouseBattIndicator = null;
+	kPower.dbusCon.signal_unsubscribe(btDevicesBattIndicator.subIdAdd);
+	kPower.dbusCon.signal_unsubscribe(btDevicesBattIndicator.subIdRem);
+	btDevicesBattIndicator._proxy = null;
+	btDevicesBattIndicator.reset();
+	btDevicesBattIndicator.destroy();
+	btDevicesBattIndicator = null;
 }

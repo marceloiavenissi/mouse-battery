@@ -22,13 +22,13 @@ var dbusCon;
 
 var mBattIndicator = new Lang.Class({
 
-	Name : "BtMouseBattIndicator",
+	Name : "BtDevicesBattIndicator",
 	Extends: PanelMenu.Button,
 
 	_init: function () {
 		Log("Init mBattIndicator");
 
-		this.parent(0.0, "btMouseBattIndicator");
+		this.parent(0.0, "btDevicesBattIndicator");
 
 		var hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box bt-mouse-batt-hbox' });
 		this.icon = new St.Icon({ icon_name: 'input-mouse',
@@ -66,46 +66,46 @@ var mBattIndicator = new Lang.Class({
 		var iname = 'org.freedesktop.UPower';
 		var sender = 'org.freedesktop.UPower' ;
 
-		this.mouse = this.findMouse();
+		this.arrDevices = this.findDevices();
 		this._newProxy();
 		this.subIdAdd = dbusCon.signal_subscribe(sender,iname,'DeviceAdded',null, null,0,() => {
 				Log('Dev added')
-				this.mouse = this.findMouse();
+				this.arrDevices = this.findDevices();
 				this._newProxy();
 			});
 		this.subIdRem = dbusCon.signal_subscribe(sender,iname,'DeviceRemoved',null, null,0,() => {
-				var m = this.findMouse();
+				var newListDevices = this.findDevices();
 				Log('Hold on! Something has been removed')
-				if (m === undefined) {
-					Log("Too bad, so sad. It's your mouse");
+				if (newListDevices.length === 0) {
+					Log("Too bad, so sad. It's your device");
 					this._proxy = null;
-					this.mouse = null;
-					this.entryItem.label.set_text("Too bad, so sad. Mouse removed");
+					this.arrDevices = null;
+					this.entryItem.label.set_text("Too bad, so sad. Device removed");
 					this.buttonText.set_text('%');
 					this.actor.hide();
 
-				} else if (m.native_path != this.mouse.native_path) {
-					Log("Bad news, mouse removed! Good news, found another one");
-					this.mouse = m;
+				} else if (newListDevices[0].native_path != this.arrDevices[0].native_path) {
+					Log("Bad news, device removed! Good news, found another one");
+					this.arrDevices = newListDevices;
 					this._proxy = null;
 					this._newProxy();
 				} else {
-					Log("Wew!!! not your mouse");
+					Log("Wew!!! not your device");
 				}
 			});
 	},
 
-	findMouse : function () {
-		Log("findMouse");
+	findDevices : function () {
+		Log("findDevices");
 		var upowerClient = UPower.Client.new_full(null);
 		var devices = upowerClient.get_devices();
-		var i;
+		/*var i;
 		for (i=0; i < devices.length; i++){
 			if (devices[i].kind == UPower.DeviceKind.MOUSE){
 				Log("Found: " + devices[i].model + " | " + devices[i].native_path);
-				return devices[i];
 			}
-		}
+		}*/
+		return devices;
 	},
 
 	_sync : function () {
@@ -113,8 +113,8 @@ var mBattIndicator = new Lang.Class({
 		var text;
 		try {
 			var percent = this.getBatteryStatus();
-			Log("_sync: " + this.mouse.model + " | " + this.mouse.native_path);
-			text = this.mouse.model+ ": " + percent;
+			Log("_sync: " + this.arrDevices[0].model + " | " + this.arrDevices[0].native_path);
+			text = this.arrDevices[0].model+ ": " + percent;
 			this.entryItem.label.set_text(text);
 			this.buttonText.set_text(percent);
 			this.actor.show();
@@ -129,24 +129,24 @@ var mBattIndicator = new Lang.Class({
 	getBatteryStatus : function () {
 		Log("read battery info");
 		try {
-			this.mouse.refresh_sync(null);
+			this.arrDevices[0].refresh_sync(null);
 		} catch (err) {
 			Log("WTF: " + err.message);
 		}
-		var percentage = this.mouse.percentage +"%";
+		var percentage = this.arrDevices[0].percentage +"%";
 		Log(percentage);
 		return percentage;
 	},
 
 	_newProxy : function(){
 		Log("Create new DBusProxy");
-		if (this.mouse === undefined) {
+		if (this.arrDevices[0] === undefined) {
 			Log("Too bad, so sad, no bluetooth mouse has been detected, no proxy");
 		} else {
 			if (this._proxy === undefined || this._proxy === null) {
 				this._proxy = new	PowerManagerProxy(Gio.DBus.system,
 									BUS_NAME,
-									this.mouse.get_object_path(),
+									this.arrDevices[0].get_object_path(),
 									(proxy, error) => {
 										Log ("Proxy callback function");
 										if (error) {
