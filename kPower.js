@@ -17,6 +17,47 @@ const BUS_NAME = 'org.freedesktop.UPower';
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Clutter    = imports.gi.Clutter;
+/**
+---------------------------------------------------------------
+Devices types
+
+https://lazka.github.io/pgi-docs/#UPowerGlib-1.0/enums.html
+
+The device type.
+
+UNKNOWN = 0
+
+LINE_POWER = 1
+
+TABLET = 10
+
+COMPUTER = 11
+
+GAMING_INPUT = 12
+
+LAST = 13
+
+BATTERY = 2
+
+UPS = 3
+
+MONITOR = 4
+
+MOUSE = 5
+
+KEYBOARD = 6
+
+PDA = 7
+
+PHONE = 8
+
+MEDIA_PLAYER = 9
+-------------------------------------------------------------
+Icons
+
+https://developer.gnome.org/icon-naming-spec/
+
+*/
 
 var dbusCon;
 
@@ -110,13 +151,15 @@ var mBattIndicator = new Lang.Class({
 
 	_sync : function () {
 		Log("_sync: begin" )
-		var text;
+		var text = "";
 		try {
-			var percent = this.getBatteryStatus();
-			Log("_sync: " + this.arrDevices[0].model + " | " + this.arrDevices[0].native_path);
-			text = this.arrDevices[0].model+ ": " + percent;
+			for (i=0; i < devices.length; i++){
+				var percent = this.getBatteryStatus(this.arrDevices[i]);
+				Log("_sync: " + this.arrDevices[i].model + " | " + this.arrDevices[i].native_path);
+				text = this.arrDevices[i].model+ ": " + percent+"\n";
+			}
 			this.entryItem.label.set_text(text);
-			this.buttonText.set_text(percent);
+			this.buttonText.set_text(devices.length);
 			this.actor.show();
 		} catch (err) {
 			Log("no batt found ");
@@ -126,22 +169,22 @@ var mBattIndicator = new Lang.Class({
 		Log(text);
 	},
 
-	getBatteryStatus : function () {
+	getBatteryStatus : function (device) {
 		Log("read battery info");
 		try {
-			this.arrDevices[0].refresh_sync(null);
+			device.refresh_sync(null);
 		} catch (err) {
 			Log("WTF: " + err.message);
 		}
-		var percentage = this.arrDevices[0].percentage +"%";
+		var percentage = device.percentage +"%";
 		Log(percentage);
 		return percentage;
 	},
 
 	_newProxy : function(){
 		Log("Create new DBusProxy");
-		if (this.arrDevices[0] === undefined) {
-			Log("Too bad, so sad, no bluetooth mouse has been detected, no proxy");
+		if (this.arrDevices.length === 0) {
+			Log("Too bad, so sad, no bluetooth devices has been detected, no proxy");
 		} else {
 			if (this._proxy === undefined || this._proxy === null) {
 				this._proxy = new	PowerManagerProxy(Gio.DBus.system,
