@@ -1,7 +1,7 @@
 # DESCRIPTION
 ===============
 
-Battery indicator. Based on https://github.com/codilia/mouse-battery
+Any device battery indicator. Based on https://github.com/codilia/mouse-battery
 
 # INSTALLATION
 ================
