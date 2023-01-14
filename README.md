@@ -8,9 +8,8 @@ Battery indicator. Based on https://github.com/codilia/mouse-battery
 
 ## Install from git
    1. From your terminal, go to "~/.local/share/gnome-shell/extensions"
-   2. Clone the source code from git:
-	git clone https://github.com/marceloiavenissi/devices-battery.git
-   3. Restart gnome-shell: Alt + F2, type 'r' then hit Enter
+   2. Clone the source code from git: ```git clone https://github.com/marceloiavenissi/devices-battery.git devices-battery@menesesmarcelo.com```
+   4. Restart gnome-shell: Alt + F2, type 'r' then hit Enter
 
 # TROUBLESHOOTING
 ===================
@@ -20,6 +19,8 @@ This extension retrieve device's info using DBusProxy & GlibUPower, if you ever 
       method 1: Issue 'upower -d | grep mouse -A 7' in your terminnal
       method 2: Run gnome-power-statistics
    2. Check gnome-shell log:
+      ```
       journalctl /usr/bin/gnome-shell | grep mBatt		# this commmand will dump all gnome-shell log ever record
       journalctl -f /usr/bin/gnome-shell | grep mBatt		# this will only show new log
+      ```
 
