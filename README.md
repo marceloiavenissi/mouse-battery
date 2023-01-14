@@ -1,7 +1,7 @@
 # DESCRIPTION
 ===============
 
-Battery indicator for mouse. Based on https://extensions.gnome.org/extension/2170/keyboard-battery/
+Battery indicator. Based on https://github.com/codilia/mouse-battery
 
 # INSTALLATION
 ================
@@ -9,7 +9,7 @@ Battery indicator for mouse. Based on https://extensions.gnome.org/extension/217
 ## Install from git
    1. From your terminal, go to "~/.local/share/gnome-shell/extensions"
    2. Clone the source code from git:
-	git clone https://github.com/codilia/mouse-battery.git mouse-battery@codilia.com
+	git clone https://github.com/marceloiavenissi/devices-battery.git
    3. Restart gnome-shell: Alt + F2, type 'r' then hit Enter
 
 # TROUBLESHOOTING
